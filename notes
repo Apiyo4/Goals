@@ -1,0 +1,149 @@
+input property binding
+----------------------
+For a child to receive data from parent component we use input binding
+Inside the child class import input
+    import {Input} from '@angular/core'
+inside the parent component, use squares to bind whatever you are sending to the child component
+    <app-child [goal]= 'goal'
+
+Output property binding
+-----------------------
+impot Output and EventEmitter from '@angular/core'
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+declare what you want to send to parent
+@Output isComplete = new EventEmitter<boolean>()
+inside function send wjatever you want to emit
+ goalComplete(complete:boolean){
+    this.isComplete.emit(complete);
+  }
+inside parent component
+<app-child (isComplete) = 'completeGoal($event, i)'
+
+completeGoal(isComplete, index){
+    if (isComplete) {
+      this.goals.splice(index,1);
+    }
+  }
+
+directive -  a function that executes whenever angular compiler finds it in the DOM
+
+directive
+---------
+ng g directive name
+
+bootstrap
+---------
+npm install --save bootstrap popper
+
+inside styles.css 
+@import "~bootstrap/dist/css/bootstrap.css"
+
+form
+-----
+in app.module.ts
+import {formsModule} from '@angular/forms'
+
+inside the imports array add formsModule
+
+imports: [
+    BrowserModule,
+    AppRoutingModule,
+    FormsModule
+  ]
+create an empty goal, where you want to get data from form in the form component
+newGoal = new Goal(0,"","",new Date());
+inside the html for form:
+<form #goalForm = 'ngForm'>
+<input type="text" required class="form-control" id="name" [(ngModel)]="newGoal.name" name="name">
+validation
+inside input add #name='ngModel'
+
+<form #goalForm='ngForm'>
+      <div class="form-group">
+
+          <label for="name">Name</label>
+          <input type="text" class="form-control" id="name" [(ngModel)]="newGoal.name" name="name" #name='ngModel' required>
+          <div [hidden]="name.valid || name.pristine" class="alert alert-danger">
+            <p>Name is required</p>
+          </div>
+      </div>
+
+submit form
+add (ngSubmit) = 'submitGoal()' in form, so it becomes:
+<form (ngSubmit)='submitGoal()' #goalForm='ngForm'>
+then create a fx for submit Goal
+@Output() addGoal = new EventEmitter<Goal>();
+submitGoal(){
+this.addGoal.emit(this.newGoal);
+  }
+then send it to parent
+<app-goal-form (addGoal)="addNewGoal($event)"></app-goal-form>
+
+inside parent component.ts
+ addNewGoal(goal){
+    let goalLength = this.goals.length;
+    goal.id = goalLength+1;
+    goal.completeDate = new Date(goal.completeDate)
+    this.goals.push(goal)
+  }
+
+service
+--------
+ng generate service goal-service/goal
+
+specify the method; so getGoals
+then where you want to consume:
+goals:Goal[];
+
+  constructor(goalService:GoalService) {
+    this.goals = goalService.getGoals()
+  }
+
+HttpClient
+-----------
+We import HttpClientModule and add it inside the imports array
+import { HttpClientModule } from '@angular/common/http';
+imports:[
+  HttpClientModule
+]
+
+ProgressBar
+-----------
+npm install --save @ngx-progressbar/core@3.0.2 @ngx-progressbar/http-client@3.0.2
+npm install --save rxjs-compat
+in app.module.ts
+import { NgProgressModule } from '@ngx-progressbar/core';
+import { NgProgressHttpClientModule } from '@ngx-progressbar/http-client';
+...
+imports: [
+    ....
+    NgProgressModule.forRoot(),
+    NgProgressHttpClientModule
+],
+inside top component:
+<ng-progress></ng-progress>
+
+HTTP service
+------------
+put url inside environment.ts
+apiUrl: "http://quotes.stormconsultancy.co.uk/random.json"
+
+ng generate service quote-http/quote-request
+
+AppRoutingModule
+----------------
+ng generate module app-routing --flat --module=app
+
+add code in the app-AppRoutingModule.ts
+
+inside app.component.html remove app-goal selector and add
+<router-outlet></router-outlet>
+
+generate component navbar
+ng generate component navbar
+
+to navigate to different pages we use the  routerLink attribute
+<a class="nav-item nav-link" routerLink="/about">About</a>
+
+then add the routerLinkActiveAttribute
+<a class="nav-item nav-link" routerLink="/about" routerLinkActive='active'>About</a>
