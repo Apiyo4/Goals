@@ -1,0 +1,3 @@
+<p  *ngFor='let vocabulary of vocabularies; let i = index'(click)='defineWord(i)' > <span class='title'>{{vocabulary.word}} </span>
+    <app-definition *ngIf='vocabulary.showDefinition' [vocabulary]='vocabulary'></app-definition>
+</p>
